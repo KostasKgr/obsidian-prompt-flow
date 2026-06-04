@@ -1,6 +1,5 @@
 // eslint.config.mjs
 import globals from "globals";
-import tseslint from "typescript-eslint";
 import tsparser from "@typescript-eslint/parser";
 import { defineConfig, globalIgnores } from "eslint/config";
 import obsidianmd from "eslint-plugin-obsidianmd";
