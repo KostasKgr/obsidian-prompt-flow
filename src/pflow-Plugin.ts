@@ -3,6 +3,7 @@ import {
     type Editor,
     type MarkdownFileInfo,
     type MarkdownView,
+    Notice,
     Plugin,
 } from "obsidian";
 import type {
@@ -35,6 +36,30 @@ export class PromptFlowPlugin extends Plugin implements Logger {
 
         this.addSettingTab(new PromptFlowSettingsTab(this.app, this));
         this.generator = new ContentGenerator(this.app, this.settings, this);
+
+        this.addCommand({
+            id: "verify-prompt-file",
+            name: "Verify prompt file",
+            callback: async () => {
+                const file = this.app.workspace.getActiveFile();
+                if (!file) {
+                    new Notice("No active file.");
+                    return;
+                }
+                const errors =
+                    await this.generator.promptResolver.validatePromptFile(
+                        file.path,
+                    );
+                if (errors.length === 0) {
+                    new Notice(`✓ Valid prompt file: ${file.name}`);
+                } else {
+                    new Notice(
+                        `✗ Prompt file errors:\n${errors.join("\n")}`,
+                        8000,
+                    );
+                }
+            },
+        });
 
         // window is intentional: filters are shared globally
         window.promptFlow = window.promptFlow ?? {};

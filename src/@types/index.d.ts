@@ -16,6 +16,8 @@ export interface PromptConfig {
     connection?: string;
 }
 
+export type ContextMode = "all" | "none" | "above" | "below";
+
 export interface ResolvedPrompt {
     prompt: string;
     connection?: string;
@@ -32,6 +34,7 @@ export interface ResolvedPrompt {
     filters?: string[];
     wrapInBlockquote?: boolean;
     calloutHeading?: string;
+    context?: ContextMode;
 }
 
 export type LLMProvider = "ollama" | "openai-compatible";

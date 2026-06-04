@@ -28,9 +28,7 @@ tasks:
   verify:
     desc: Run the verification checks expected by AGENTS.md.
     cmds:
-      # Lint and format
-      - pnpm exec biome check ./src
-      # Autofix
+      # Lint, format and autofix
       - pnpm exec biome check --write ./src
       - pnpm exec eslint
       - task: build
