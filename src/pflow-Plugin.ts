@@ -289,7 +289,7 @@ export class PromptFlowPlugin extends Plugin implements Logger {
     }
 
     logInfo(message: string, ...params: unknown[]): void {
-        console.debug("(PF)", message, ...params);
+        console.log("(PF)", message, ...params);
     }
 
     logWarn(message: string, ...params: unknown[]): void {
@@ -320,7 +320,7 @@ export class PromptFlowPlugin extends Plugin implements Logger {
 
     logLlmRequest(payload: unknown): void {
         if (this.settings?.showLlmRequests) {
-            console.debug("(PF)[LLM Request]", payload);
+            console.log("(PF)[LLM Request]", payload);
         }
     }
 }
