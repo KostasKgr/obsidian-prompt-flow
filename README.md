@@ -126,7 +126,6 @@ model: meta-llama/llama-3.1-8b-instruct
 num_ctx: 4096
 temperature: 0.7
 top_p: 0.9
-isContinuous: true
 includeLinks: true
 excludeCalloutTypes: ["todo", "warning"]
 wrapInBlockquote: true
@@ -144,17 +143,12 @@ day.
 - `top_p`: Nucleus sampling threshold (0.0-1.0)
 - `top_k`: Top-k sampling limit (Ollama only)
 - `repeat_penalty`: Penalty for repetition (>0, default: 1.1, Ollama only)
-- `isContinuous`: Keep conversation context between requests (default: false)
 - `includeLinks`: Auto-expand `[[wikilinks]]` to include linked content (default: false)
 - `excludePatterns`: Array of regex patterns to exclude links
 - `excludeCalloutTypes`: Array of callout types to filter from content
 - `filters`: Array of filter function names from `window.promptFlow.filters`
 - `wrapInBlockquote`: Format output as blockquote (default: true)
 - `calloutHeading`: Heading text for callout-style formatting
-
-### Continuous Conversations
-
-When `isContinuous` is `true`, the plugin maintains conversation context for each prompt/note combination. This allows follow-up prompts to build on previous exchanges. Context is automatically cleared after 30 minutes of inactivity.
 
 ### Link Expansion
 

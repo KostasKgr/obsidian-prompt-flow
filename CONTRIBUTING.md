@@ -130,7 +130,6 @@ Prompt files include frontmatter to configure model parameters and behavior:
 - `model`: Specific Ollama model to use
 - `num_ctx`: Context window size
 - `temperature`, `top_p`, `top_k`, `repeat_penalty`: Generation parameters
-- `isContinuous`: Enable conversation context persistence
 - `includeLinks`: Auto-expand `[[wikilinks]]` in content
 - `excludePatterns`: Regex patterns to filter linked content
 - `excludeCalloutTypes`: Callout types to filter from content

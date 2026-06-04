@@ -4,7 +4,6 @@ import {
     type MarkdownFileInfo,
     type MarkdownView,
     Plugin,
-    type TFile,
 } from "obsidian";
 import type {
     ConnectionConfig,
@@ -19,19 +18,12 @@ import { createLLMClient } from "./pflow-LLMClientFactory";
 import { PromptFlowSettingsTab } from "./pflow-SettingsTab";
 import { compileExcludePatterns } from "./pflow-Utils";
 
-const CONTEXT_TTL_MS = 30 * 60 * 1000; // 30 minutes
-const CONTEXT_REAP_INTERVAL_MS = 3 * 60 * 60 * 1000; // 3 hours
-
 export class PromptFlowPlugin extends Plugin implements Logger {
     settings!: PromptFlowSettings;
     generator!: ContentGenerator;
 
     private commandIds: string[] = [];
     private excludePatterns: RegExp[] = [];
-    private promptContexts = new Map<
-        string,
-        { context: number[]; timestamp: number }
-    >();
 
     promptFlow() {
         // window is intentional: filters are shared globally
@@ -51,7 +43,6 @@ export class PromptFlowPlugin extends Plugin implements Logger {
         // Defer initialization until layout is ready
         this.app.workspace.onLayoutReady(() => {
             this.generateCommands();
-            this.registerContextReaper();
         });
         this.logInfo("Loaded Prompt Flow (PF)", `v${this.manifest.version}`);
     }
@@ -229,63 +220,6 @@ export class PromptFlowPlugin extends Plugin implements Logger {
         ].filter(Boolean);
 
         return allPatterns.some((pattern) => pattern.test(textToCheck));
-    }
-
-    buildContextKey(
-        file: TFile,
-        resolvedPrompt: ResolvedPrompt,
-        promptKey: string,
-    ): string | null {
-        if (resolvedPrompt.isContinuous !== true) {
-            return null;
-        }
-        const promptSource = resolvedPrompt.sourcePath || promptKey;
-        return `${file.path}::${promptSource}`;
-    }
-
-    getContextForKey(key: string | null): number[] | undefined {
-        if (!key) {
-            return undefined;
-        }
-        const entry = this.promptContexts.get(key);
-        if (!entry) {
-            return undefined;
-        }
-        if (Date.now() - entry.timestamp > CONTEXT_TTL_MS) {
-            this.promptContexts.delete(key);
-            return undefined;
-        }
-        return entry.context;
-    }
-
-    storeContextForKey(key: string, context: number[]): void {
-        if (context.length === 0) {
-            this.promptContexts.delete(key);
-            return;
-        }
-        this.promptContexts.set(key, { context, timestamp: Date.now() });
-        this.cullExpiredContexts();
-    }
-
-    private cullExpiredContexts(): void {
-        if (this.promptContexts.size === 0) {
-            return;
-        }
-        const now = Date.now();
-        for (const [key, value] of this.promptContexts.entries()) {
-            if (now - value.timestamp > CONTEXT_TTL_MS) {
-                this.promptContexts.delete(key);
-            }
-        }
-    }
-
-    private registerContextReaper(): void {
-        this.registerInterval(
-            window.setInterval(
-                () => this.cullExpiredContexts(),
-                CONTEXT_REAP_INTERVAL_MS,
-            ),
-        );
     }
 
     logInfo(message: string, ...params: unknown[]): void {

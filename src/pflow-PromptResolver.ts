@@ -89,12 +89,6 @@ export class PromptResolver {
                     ["repeat_penalty", "repeatPenalty", "repeat-penalty"],
                     (val) => val > 0,
                 );
-                const rawContinuous: unknown =
-                    frontmatter?.isContinuous ??
-                    frontmatter?.is_continuous ??
-                    frontmatter?.["is-continuous"] ??
-                    frontmatter?.continuous;
-                const isContinuous = parseBoolean(rawContinuous);
                 const includeLinks = parseBoolean(frontmatter?.includeLinks);
                 const excludePatterns = compileExcludePatterns(
                     frontmatter?.excludePatterns as optionalStrings,
@@ -124,7 +118,6 @@ export class PromptResolver {
                     connection,
                     model,
                     numCtx,
-                    isContinuous,
                     includeLinks,
                     excludePatterns,
                     excludeCalloutTypes,

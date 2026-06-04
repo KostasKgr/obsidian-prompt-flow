@@ -201,16 +201,8 @@ export class ContentGenerator {
             0,
         );
 
-        const contextKey = this.plugin.buildContextKey(
-            activeNote,
-            resolvedPrompt,
-            promptKey,
-        );
-        const context = this.plugin.getContextForKey(contextKey);
-
         const generateOptions = {
             numCtx: resolvedPrompt.numCtx,
-            context,
             temperature: resolvedPrompt.temperature,
             topP: resolvedPrompt.topP,
             topK: resolvedPrompt.topK,
@@ -236,10 +228,6 @@ export class ContentGenerator {
             );
 
             notice.hide();
-
-            if (contextKey !== null && result.context) {
-                this.plugin.storeContextForKey(contextKey, result.context);
-            }
 
             return result.response;
         } catch (error) {

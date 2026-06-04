@@ -21,7 +21,6 @@ export interface ResolvedPrompt {
     connection?: string;
     model?: string;
     numCtx?: number;
-    isContinuous?: boolean;
     includeLinks?: boolean;
     excludePatterns?: RegExp[];
     excludeCalloutTypes?: string[];
