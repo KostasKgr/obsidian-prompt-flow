@@ -60,7 +60,7 @@ export class InputModal extends Modal {
     private finish(value: string | null) {
         if (this.settled) return;
         this.settled = true;
-        this.resolve(value?.trim() || null);
+        this.resolve(value === null ? null : value.trim());
         this.close();
     }
 }
