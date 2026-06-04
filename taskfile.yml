@@ -23,3 +23,22 @@ tasks:
         rsync -av --exclude=data.json build/ "$OBSIDIAN_VAULT_PATH/.obsidian/plugins/prompt-flow/"
       - obsidian plugin:enable id=prompt-flow
       - obsidian plugin:reload id=prompt-flow
+
+
+  verify:
+    desc: Run the verification checks expected by AGENTS.md.
+    cmds:
+      # Lint and format
+      - pnpm exec biome check ./src
+      # Autofix
+      - pnpm exec biome check --write ./src
+      - task: build
+
+
+  build:
+    desc: Build the project
+    cmds:
+      - pnpm exec biome check ./src
+      - node esbuild.config.mjs production
+      - cp -v manifest.json README.md build
+
