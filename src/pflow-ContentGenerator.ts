@@ -159,7 +159,7 @@ export class ContentGenerator {
         const model =
             resolvedPrompt.model || connection.defaultModel || "llama3.1";
 
-        this.plugin.logInfo("Model resolution:", {
+        this.plugin.logDebug("Model resolution:", {
             fromPromptFile: resolvedPrompt.model,
             fromConnectionDefault: connection.defaultModel,
             resolved: model,

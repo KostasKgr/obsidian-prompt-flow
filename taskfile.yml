@@ -32,6 +32,7 @@ tasks:
       - pnpm exec biome check ./src
       # Autofix
       - pnpm exec biome check --write ./src
+      - pnpm exec eslint
       - task: build
 
 

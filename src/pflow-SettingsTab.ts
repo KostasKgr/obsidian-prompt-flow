@@ -189,6 +189,7 @@ export class PromptFlowSettingsTab extends PluginSettingTab {
         });
     }
 
+    // TODO keep only getSettingDefinitions when 1.13 is public, and rmeove eslint disable
     // On 1.13.0+, update() re-renders from getSettingDefinitions().
     // On older Obsidian, update() doesn't exist; fall back to display().
     private refresh(): void {
@@ -196,8 +197,10 @@ export class PromptFlowSettingsTab extends PluginSettingTab {
             typeof (this as unknown as { update?: () => void }).update ===
             "function"
         ) {
+            // eslint-disable-next-line obsidianmd/no-unsupported-api
             this.update();
         } else {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             this.display();
         }
     }

@@ -223,6 +223,7 @@ export class PromptFlowPlugin extends Plugin implements Logger {
     }
 
     logInfo(message: string, ...params: unknown[]): void {
+        // eslint-disable-next-line obsidianmd/rule-custom-message
         console.log("(PF)", message, ...params);
     }
 
@@ -248,12 +249,14 @@ export class PromptFlowPlugin extends Plugin implements Logger {
 
     logDebug(message: string, ...params: unknown[]): void {
         if (this.settings?.debugLogging) {
-            console.debug("(PF)", message, ...params);
+            // eslint-disable-next-line obsidianmd/rule-custom-message
+            console.log("(PF)", message, ...params);
         }
     }
 
     logLlmRequest(payload: unknown): void {
         if (this.settings?.showLlmRequests) {
+            // eslint-disable-next-line obsidianmd/rule-custom-message
             console.log("(PF)[LLM Request]", payload);
         }
     }
