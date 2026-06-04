@@ -1,4 +1,5 @@
 import {
+    AbstractInputSuggest,
     type App,
     Modal,
     Notice,
@@ -7,6 +8,7 @@ import {
     Setting,
     type SettingDefinition,
     type SettingDefinitionItem,
+    type TFile,
 } from "obsidian";
 import type { ConnectionConfig, PromptConfig } from "./@types";
 import { createLLMClient } from "./pflow-LLMClientFactory";
@@ -665,26 +667,18 @@ class PromptModal extends Modal {
         new Setting(contentEl)
             .setName("Prompt file")
             .setDesc(
-                "Path to file containing the prompt and invocation parameters; see documentation for details.",
+                "Path to file containing the prompt and invocation" +
+                    " parameters; see documentation for details.",
             )
             .addText((text) => {
-                const checkFile = (filePath: string) => {
-                    const exists =
-                        this.app.vault.getAbstractFileByPath(filePath) !== null;
-                    if (exists) {
-                        text.inputEl.addClass("fileFound");
-                    } else {
-                        text.inputEl.removeClass("fileFound");
-                    }
-                };
+                new FileSuggest(this.app, text.inputEl, (path) => {
+                    this.config.promptFile = path;
+                });
                 text.setPlaceholder("prompts/my-prompt.md")
                     .setValue(this.config.promptFile || "")
                     .onChange((value) => {
-                        const path = value.trim();
-                        this.config.promptFile = path;
-                        checkFile(path);
+                        this.config.promptFile = value.trim();
                     });
-                checkFile(this.config.promptFile || "");
             });
 
         new Setting(contentEl)
@@ -704,6 +698,37 @@ class PromptModal extends Modal {
             .addButton((btn) =>
                 btn.setButtonText("Cancel").onClick(() => this.close()),
             );
+    }
+}
+
+// ── File picker ───────────────────────────────────────────────────────────────
+
+class FileSuggest extends AbstractInputSuggest<TFile> {
+    private callback: (path: string) => void;
+
+    constructor(
+        app: App,
+        inputEl: HTMLInputElement,
+        callback: (path: string) => void,
+    ) {
+        super(app, inputEl);
+        this.callback = callback;
+    }
+
+    getSuggestions(query: string): TFile[] {
+        return this.app.vault
+            .getFiles()
+            .filter((f) => f.path.toLowerCase().includes(query.toLowerCase()));
+    }
+
+    renderSuggestion(file: TFile, el: HTMLElement): void {
+        el.setText(file.path);
+    }
+
+    selectSuggestion(file: TFile): void {
+        this.setValue(file.path);
+        this.callback(file.path);
+        this.close();
     }
 }
 
