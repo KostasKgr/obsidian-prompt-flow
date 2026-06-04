@@ -1,0 +1,25 @@
+version: "3"
+
+
+tasks:
+  install:
+    silent: true
+    requires:
+      vars:
+        - OBSIDIAN_VAULT_PATH
+    cmds: 
+      - echo "Installing for vault at $OBSIDIAN_VAULT_PATH"
+      - |
+        command -v rsync >/dev/null 2>&1 || { echo "Error: rsync is not installed."; exit 1; }
+        [ -d "$OBSIDIAN_VAULT_PATH/.obsidian" ] || { echo "Error: '$OBSIDIAN_VAULT_PATH' does not appear to be an Obsidian vault (no .obsidian directory found)."; exit 1; }
+        [ -d build ] || { echo "Error: build directory does not exist. Run 'pnpm build' first."; exit 1; }
+      - |
+        dry=$(rsync -av --delete --dry-run build/ "$OBSIDIAN_VAULT_PATH/.obsidian/plugins/prompt-flow/")
+        if echo "$dry" | grep -q "^deleting "; then
+          echo "$dry" | grep "^deleting "
+          echo "Aborting: files would be deleted. Review the changes manually."
+          exit 1
+        fi
+        rsync -av build/ "$OBSIDIAN_VAULT_PATH/.obsidian/plugins/prompt-flow/"
+      - obsidian plugin:enable id=prompt-flow
+      - obsidian plugin:reload id=prompt-flow
