@@ -8,6 +8,8 @@ import {
     getFrontmatterValue,
     extractFrontmatterValue,
     parseParameterWithConstraint,
+    parseAskVars,
+    interpolateAskVars,
 } from "../src/pflow-Utils";
 
 describe("normalizeToArray", () => {
@@ -252,5 +254,62 @@ describe("parseParameterWithConstraint", () => {
         expect(
             parseParameterWithConstraint(fm, ["temp"], (val) => val >= 0),
         ).toBeUndefined();
+    });
+});
+
+describe("parseAskVars", () => {
+    it("returns empty array when no placeholders", () => {
+        expect(parseAskVars("No placeholders here.")).toEqual([]);
+    });
+
+    it("parses a single placeholder", () => {
+        expect(parseAskVars('Hello {{ask name "Your name?"}}!')).toEqual([
+            { name: "name", question: "Your name?" },
+        ]);
+    });
+
+    it("deduplicates by variable name, keeping first question", () => {
+        const result = parseAskVars(
+            '{{ask x "First?"}} and {{ask x "Second?"}}',
+        );
+        expect(result).toEqual([{ name: "x", question: "First?" }]);
+    });
+
+    it("returns multiple distinct vars in order of appearance", () => {
+        const result = parseAskVars(
+            '{{ask a "Q1?"}} middle {{ask b "Q2?"}}',
+        );
+        expect(result).toEqual([
+            { name: "a", question: "Q1?" },
+            { name: "b", question: "Q2?" },
+        ]);
+    });
+});
+
+describe("interpolateAskVars", () => {
+    it("replaces a single placeholder with the answer", () => {
+        expect(
+            interpolateAskVars('I ate {{ask food "What?"}}', { food: "eggs" }),
+        ).toBe("I ate eggs");
+    });
+
+    it("replaces all occurrences of the same placeholder", () => {
+        expect(
+            interpolateAskVars('{{ask x "Q?"}} and {{ask x "Q?"}}', {
+                x: "yes",
+            }),
+        ).toBe("yes and yes");
+    });
+
+    it("replaces with empty string when answer key is missing", () => {
+        expect(
+            interpolateAskVars('Hello {{ask name "Name?"}}', {}),
+        ).toBe("Hello ");
+    });
+
+    it("leaves unrelated text unchanged", () => {
+        expect(
+            interpolateAskVars("No placeholders", { x: "y" }),
+        ).toBe("No placeholders");
     });
 });

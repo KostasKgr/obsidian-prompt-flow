@@ -25,12 +25,18 @@ tasks:
       - obsidian plugin:reload id=prompt-flow
 
 
+  test:
+    desc: Run unit tests (excludes integration tests that require a live Ollama instance)
+    cmds:
+      - pnpm exec vitest run --exclude tests/ollama-integration.test.ts
+
   verify:
     desc: Run the verification checks expected by AGENTS.md.
     cmds:
       # Lint, format and autofix
       - pnpm exec biome check --write ./src
       - pnpm exec eslint
+      - task: test
       - task: build
 
 

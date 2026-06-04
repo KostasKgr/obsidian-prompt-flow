@@ -2,6 +2,35 @@ import type { ContextMode } from "./@types";
 
 export type optionalStrings = string | string[] | undefined;
 
+export interface AskVar {
+    name: string;
+    question: string;
+}
+
+const ASK_PATTERN = /\{\{ask\s+(\w+)\s+"([^"]+)"\}\}/g;
+
+export function parseAskVars(prompt: string): AskVar[] {
+    const seen = new Set<string>();
+    const vars: AskVar[] = [];
+    for (const [, name, question] of prompt.matchAll(ASK_PATTERN)) {
+        if (!seen.has(name)) {
+            seen.add(name);
+            vars.push({ name, question });
+        }
+    }
+    return vars;
+}
+
+export function interpolateAskVars(
+    prompt: string,
+    answers: Record<string, string>,
+): string {
+    return prompt.replace(
+        ASK_PATTERN,
+        (_, name: string) => answers[name] ?? "",
+    );
+}
+
 export const CONTEXT_MODES: readonly ContextMode[] = [
     "all",
     "none",

@@ -13,11 +13,14 @@ import type {
     PromptFlowSettings,
     ResolvedPrompt,
 } from "./@types";
+import { InputModal } from "./pflow-InputModal";
 import type { PromptFlowPlugin } from "./pflow-Plugin";
 import { PromptResolver } from "./pflow-PromptResolver";
 import {
     filterCallouts,
     formatAsBlockquote,
+    interpolateAskVars,
+    parseAskVars,
     parseLinkReference,
 } from "./pflow-Utils";
 
@@ -72,6 +75,17 @@ export class ContentGenerator {
             promptKey,
             resolved,
         );
+
+        const askVars = parseAskVars(resolved.prompt);
+        if (askVars.length > 0) {
+            const answers: Record<string, string> = {};
+            for (const { name, question } of askVars) {
+                const input = await new InputModal(this.app, question).prompt();
+                if (input === null) return;
+                answers[name] = input;
+            }
+            resolved.prompt = interpolateAskVars(resolved.prompt, answers);
+        }
 
         const contextMode = resolved.context ?? "all";
         let processedContent = "";
