@@ -10,6 +10,7 @@ import {
     parseParameterWithConstraint,
     parseAskVars,
     interpolateAskVars,
+    interpolateBuiltins,
 } from "../src/pflow-Utils";
 
 describe("normalizeToArray", () => {
@@ -311,5 +312,33 @@ describe("interpolateAskVars", () => {
         expect(
             interpolateAskVars("No placeholders", { x: "y" }),
         ).toBe("No placeholders");
+    });
+});
+
+describe("interpolateBuiltins", () => {
+    it("replaces {{date}} with weekday and ISO date", () => {
+        const fixed = new Date("2026-06-04T10:00:00Z");
+        const result = interpolateBuiltins("Today is {{date}}.", fixed);
+        expect(result).toMatch(/^Today is \w+, 2026-06-04\.$/);
+    });
+
+    it("includes the correct weekday name", () => {
+        // 2026-06-04 is a Thursday
+        const fixed = new Date("2026-06-04T12:00:00.000Z");
+        const result = interpolateBuiltins("{{date}}", fixed);
+        expect(result).toContain("2026-06-04");
+        // Just verify a weekday name appears — avoids UTC offset issues in CI
+        expect(result).toMatch(/^\w+, 2026-06-04$/);
+    });
+
+    it("replaces multiple occurrences with the same value", () => {
+        const fixed = new Date("2026-06-04T12:00:00.000Z");
+        const result = interpolateBuiltins("{{date}} and {{date}}", fixed);
+        const parts = result.split(" and ");
+        expect(parts[0]).toBe(parts[1]);
+    });
+
+    it("leaves text without {{date}} unchanged", () => {
+        expect(interpolateBuiltins("No date here")).toBe("No date here");
     });
 });

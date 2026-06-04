@@ -31,6 +31,22 @@ export function interpolateAskVars(
     );
 }
 
+const WEEKDAYS = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+];
+
+export function interpolateBuiltins(prompt: string, now = new Date()): string {
+    const isoDate = now.toISOString().slice(0, 10);
+    const weekday = WEEKDAYS[now.getDay()];
+    return prompt.replace(/\{\{date\}\}/g, `${weekday}, ${isoDate}`);
+}
+
 export const CONTEXT_MODES: readonly ContextMode[] = [
     "all",
     "none",

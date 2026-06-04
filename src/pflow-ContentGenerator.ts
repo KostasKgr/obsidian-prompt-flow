@@ -20,6 +20,7 @@ import {
     filterCallouts,
     formatAsBlockquote,
     interpolateAskVars,
+    interpolateBuiltins,
     parseAskVars,
     parseLinkReference,
 } from "./pflow-Utils";
@@ -86,6 +87,8 @@ export class ContentGenerator {
             }
             resolved.prompt = interpolateAskVars(resolved.prompt, answers);
         }
+
+        resolved.prompt = interpolateBuiltins(resolved.prompt);
 
         const contextMode = resolved.context ?? "all";
         let processedContent = "";
