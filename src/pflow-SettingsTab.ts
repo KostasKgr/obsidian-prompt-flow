@@ -3,6 +3,7 @@ import {
     Modal,
     Notice,
     PluginSettingTab,
+    SecretComponent,
     Setting,
     type SettingDefinition,
     type SettingDefinitionItem,
@@ -532,15 +533,17 @@ class ConnectionModal extends Modal {
         if (this.config.provider === "openai-compatible") {
             new Setting(contentEl)
                 .setName("API key")
-                .setDesc("Authentication key for the API")
-                .addText((text) => {
-                    text.inputEl.type = "password";
-                    text.setValue(this.config.apiKey || "").onChange(
-                        (value) => {
-                            this.config.apiKey = value.trim();
-                        },
-                    );
-                });
+                .setDesc(
+                    "Select a secret from SecretStorage" +
+                        " (the secret holds the actual API key value)",
+                )
+                .addComponent((el) =>
+                    new SecretComponent(this.app, el)
+                        .setValue(this.config.apiKeySecret || "")
+                        .onChange((value) => {
+                            this.config.apiKeySecret = value;
+                        }),
+                );
         }
 
         new Setting(contentEl)
@@ -718,7 +721,7 @@ async function testConnection(
             conn.provider,
             conn.baseUrl,
         );
-        const client = createLLMClient(conn, plugin);
+        const client = createLLMClient(conn, plugin.app, plugin);
         plugin.logInfo("Client created successfully");
 
         const isConnected = await client.checkConnection();

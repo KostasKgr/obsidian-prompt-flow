@@ -68,7 +68,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup instructions.
    - **Connection name**: A unique identifier (e.g., "openrouter", "openai")
    - **Provider**: Select "OpenAI-compatible"
    - **Base URL**: Your API endpoint (e.g., `https://api.openai.com`, `https://openrouter.ai/api`, `http://localhost:8080`)
-   - **API Key**: Your API key for the service
+   - **API Key**: Select a secret from Obsidian's SecretStorage (stores the secret name, not the key value directly)
    - **Default model**: Model identifier (e.g., `gpt-4o`, `gpt-4o-mini`, `meta-llama/llama-3.1-8b-instruct`)
 4. Test the connection using the test button
 5. Set as default connection if desired
@@ -212,7 +212,7 @@ Configure one or more LLM provider connections in Settings → Prompt Flow → C
 - **Connection name**: Unique identifier (e.g., "openrouter", "openai")
 - **Provider**: OpenAI-compatible
 - **Base URL**: API endpoint URL
-- **API Key**: Your API key for the service
+- **API Key**: Secret name from Obsidian's SecretStorage (the secret holds the actual API key value)
 - **Default model**: Model identifier (provider-specific)
 
 The plugin auto-detects the correct API path structure for different OpenAI-compatible services (standard `/v1` or OpenWebUI `/api/v1`).
@@ -231,7 +231,7 @@ The plugin auto-detects the correct API path structure for different OpenAI-comp
 - **Configurable processing**: Choose between local processing (Ollama) or external APIs (OpenAI-compatible)
 - **No telemetry**: No usage tracking or data collection by the plugin
 - **Direct connections**: Plugin only communicates with your configured LLM provider(s)
-- **API key security**: API keys are stored in Obsidian's settings and never transmitted except to your configured provider
+- **API key security**: API keys are stored in Obsidian's SecretStorage (not in `data.json`) and never transmitted except to your configured provider
 
 ## Troubleshooting
 
